@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="am" dir="ltr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ባጃጅ ትራከር</title>
+  <meta name="theme-color" content="#f5a623"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="ባጃጅ"/>
+  <link rel="manifest" id="pwa-manifest"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;600;700;900&display=swap');
+    :root{
+      --orange:#f5a623;--orange-deep:#d4881a;--orange-light:#fff3dc;
+      --black:#1a1208;--gray:#6b5c3e;--gray-light:#f5f0e8;
+      --white:#fffdf8;--red:#c0392b;--green:#2e7d4f;
+      --shadow:0 4px 20px rgba(245,166,35,0.15);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Noto Sans Ethiopic',sans-serif;background:var(--white);color:var(--black);min-height:100vh;max-width:480px;margin:0 auto;}
+
+    /* ---- LOGIN ---- */
+    #login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:var(--black);}
+    .login-logo{font-size:4rem;margin-bottom:8px;}
+    .login-title{font-size:1.6rem;font-weight:900;color:var(--orange);margin-bottom:4px;}
+    .login-sub{font-size:0.8rem;color:var(--orange-deep);margin-bottom:32px;}
+    .login-card{background:#2a1e0e;border:1.5px solid #3a2a10;border-radius:16px;padding:24px;width:100%;max-width:360px;}
+    .login-label{display:block;font-size:0.8rem;font-weight:700;color:var(--orange-deep);margin-bottom:6px;}
+    .login-input{width:100%;padding:13px 16px;border:1.5px solid #4a3520;border-radius:10px;font-family:inherit;font-size:1rem;background:#1a1208;color:var(--white);margin-bottom:16px;letter-spacing:1px;}
+    .login-input:focus{outline:none;border-color:var(--orange);}
+    .login-btn{width:100%;padding:14px;background:var(--orange);border:none;border-radius:10px;font-family:inherit;font-size:1rem;font-weight:900;cursor:pointer;color:var(--black);margin-top:4px;}
+    .login-btn:active{background:var(--orange-deep);}
+    .login-err{color:var(--red);font-size:0.82rem;text-align:center;margin-top:10px;min-height:20px;}
+    .login-hint{color:#666;font-size:0.75rem;text-align:center;margin-top:14px;}
+
+    /* ---- APP ---- */
+    #app-screen{display:none;}
+    .header{background:var(--black);color:var(--orange);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.3);}
+    .header-title{font-size:1.2rem;font-weight:900;}
+    .header-subtitle{font-size:0.68rem;color:var(--orange-deep);margin-top:1px;}
+    .header-right{display:flex;gap:10px;align-items:center;}
+    .icon-btn{background:none;border:none;color:var(--orange);font-size:1.3rem;cursor:pointer;padding:4px;}
+    .nav{display:flex;background:var(--black);border-bottom:3px solid var(--orange);}
+    .nav-btn{flex:1;padding:10px 4px;background:none;border:none;color:#888;font-family:inherit;font-size:0.72rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-3px;transition:all 0.2s;}
+    .nav-btn.active{color:var(--orange);border-bottom-color:var(--orange);}
+    .nav-btn .nav-icon{font-size:1rem;display:block;margin-bottom:2px;}
+    .page{display:none;padding:16px;}
+    .page.active{display:block;}
+    .card{background:var(--white);border:1.5px solid #e8dfc8;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
+    .form-group{margin-bottom:14px;}
+    .form-label{display:block;font-size:0.78rem;font-weight:700;color:var(--gray);margin-bottom:5px;}
+    .form-input,.form-select{width:100%;padding:11px 14px;border:1.5px solid #ddd0b0;border-radius:8px;font-family:inherit;font-size:0.95rem;background:var(--gray-light);color:var(--black);transition:border-color 0.2s;appearance:none;}
+    .form-input:focus,.form-select:focus{outline:none;border-color:var(--orange);background:var(--white);}
+    .btn{width:100%;padding:13px;border:none;border-radius:10px;font-family:inherit;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+    .btn-primary{background:var(--orange);color:var(--black);}
+    .btn-primary:active{background:var(--orange-deep);transform:scale(0.98);}
+    .btn-secondary{background:var(--gray-light);color:var(--black);border:1.5px solid #ddd0b0;}
+    .btn-danger-full{background:var(--red);color:white;}
+    .btn-green{background:var(--green);color:white;}
+    .btn-sm-danger{background:var(--red);color:white;padding:8px 14px;width:auto;font-size:0.8rem;border-radius:7px;border:none;cursor:pointer;font-family:inherit;}
+    .btn-sm-edit{background:var(--gray-light);color:var(--black);padding:8px 14px;width:auto;font-size:0.8rem;border-radius:7px;border:1.5px solid #ddd0b0;cursor:pointer;font-family:inherit;}
+    .pay-toggle-label{display:block;font-size:0.78rem;font-weight:700;color:var(--gray);margin-bottom:5px;}
+    .pay-toggle{display:flex;border-radius:8px;overflow:hidden;border:1.5px solid #ddd0b0;margin-bottom:14px;}
+    .pay-btn{flex:1;padding:11px 8px;border:none;font-family:inherit;font-size:0.88rem;font-weight:700;cursor:pointer;background:var(--gray-light);color:var(--gray);}
+    .pay-btn.paid{background:var(--green);color:white;}
+    .pay-btn.unpaid{background:var(--red);color:white;}
+    .pay-badge{display:inline-block;font-size:0.72rem;font-weight:700;padding:3px 9px;border-radius:20px;margin-left:6px;}
+    .pay-badge.paid{background:#d4edda;color:var(--green);}
+    .pay-badge.unpaid{background:#fde8e8;color:var(--red);}
+    .trip-card{background:var(--white);border:1.5px solid #e8dfc8;border-left:5px solid var(--orange);border-radius:10px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(245,166,35,0.08);}
+    .trip-card.unpaid-card{border-left-color:var(--red);}
+    .trip-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+    .trip-customer{font-weight:700;font-size:1rem;display:flex;align-items:center;flex-wrap:wrap;gap:4px;}
+    .trip-price{font-size:1.1rem;font-weight:900;color:var(--orange-deep);white-space:nowrap;}
+    .trip-details{font-size:0.8rem;color:var(--gray);line-height:1.7;}
+    .trip-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+    .empty-state{text-align:center;padding:40px 20px;color:var(--gray);}
+    .empty-icon{font-size:3rem;margin-bottom:12px;}
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+    .stat-card{background:var(--black);color:var(--orange);border-radius:12px;padding:14px;text-align:center;}
+    .stat-value{font-size:1.5rem;font-weight:900;}
+    .stat-label{font-size:0.68rem;color:var(--orange-deep);margin-top:4px;}
+    .stat-card.green-card{background:var(--green);}
+    .stat-card.red-card{background:var(--red);}
+    .report-section-title{font-size:0.85rem;font-weight:700;color:var(--gray);margin:16px 0 8px;padding-bottom:4px;border-bottom:2px solid var(--orange-light);}
+    .rank-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--gray-light);border-radius:8px;margin-bottom:6px;font-size:0.85rem;}
+    .rank-num{background:var(--orange);color:var(--black);font-weight:900;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;margin-left:8px;flex-shrink:0;}
+    .rank-name{font-weight:600;flex:1;padding:0 8px;}
+    .rank-val{font-weight:700;color:var(--orange-deep);white-space:nowrap;}
+    .month-select-row{display:flex;gap:10px;margin-bottom:16px;align-items:center;}
+    .month-select-row .form-select{flex:1;}
+    .month-label{font-size:0.8rem;font-weight:700;color:var(--gray);white-space:nowrap;}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(26,18,8,0.75);z-index:200;align-items:center;justify-content:center;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--white);border-radius:16px;padding:20px;width:92%;max-width:440px;max-height:92vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.3);}
+    .modal-title{font-size:1.1rem;font-weight:900;margin-bottom:16px;color:var(--orange-deep);}
+    .modal-actions{display:flex;gap:10px;margin-top:16px;}
+    .btn-cancel{flex:1;padding:12px;border:1.5px solid #ddd0b0;border-radius:10px;font-family:inherit;font-weight:700;background:var(--gray-light);cursor:pointer;font-size:0.9rem;}
+    .btn-save{flex:1;padding:12px;background:var(--orange);border:none;border-radius:10px;font-family:inherit;font-weight:700;cursor:pointer;font-size:0.9rem;}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--black);color:var(--orange);padding:12px 24px;border-radius:24px;font-size:0.85rem;font-weight:700;z-index:999;transition:transform 0.3s ease;white-space:nowrap;pointer-events:none;}
+    .toast.show{transform:translateX(-50%) translateY(0);}
+
+    .search-input{width:100%;padding:10px 14px;border:1.5px solid #ddd0b0;border-radius:8px;font-family:inherit;font-size:0.9rem;background:var(--gray-light);color:var(--black);margin-bottom:12px;}
+    .search-input:focus{outline:none;border-color:var(--orange);}
+    .filter-row{display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap;}
+    .filter-row .form-select{flex:1;min-width:90px;padding:8px 10px;font-size:0.82rem;}
+    .filter-label{font-size:0.75rem;color:var(--gray);font-weight:700;}
+    .section-title{font-size:0.9rem;font-weight:900;color:var(--black);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+    .count-badge{background:var(--orange);color:var(--black);border-radius:20px;padding:2px 10px;font-size:0.75rem;font-weight:900;}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .tg-status{font-size:0.72rem;color:var(--gray);margin-top:8px;text-align:center;min-height:18px;}
+    .tg-status.ok{color:var(--green);}
+    .tg-status.err{color:var(--red);}
+    .divider{border:none;border-top:1.5px solid #e8dfc8;margin:16px 0;}
+    .settings-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e8dfc8;}
+    .settings-label{font-size:0.9rem;font-weight:700;}
+    .settings-sub{font-size:0.75rem;color:var(--gray);margin-top:2px;}
+    .user-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--gray-light);border-radius:8px;margin-bottom:8px;}
+    .user-info{font-size:0.88rem;font-weight:600;}
+    .user-phone{font-size:0.75rem;color:var(--gray);}
+    /* import area */
+    .import-box{border:2px dashed #ddd0b0;border-radius:10px;padding:20px;text-align:center;cursor:pointer;margin-bottom:12px;background:var(--gray-light);}
+    .import-box:hover{border-color:var(--orange);background:var(--orange-light);}
+    .import-box-icon{font-size:2rem;margin-bottom:6px;}
+    .import-box-text{font-size:0.85rem;color:var(--gray);}
+    .toggle-switch{position:relative;display:inline-block;width:46px;height:26px;flex-shrink:0}
+    .toggle-switch input{opacity:0;width:0;height:0}
+    .toggle-slider{position:absolute;cursor:pointer;inset:0;background:#ccc;border-radius:26px;transition:.3s}
+    .toggle-slider:before{position:absolute;content:"";height:20px;width:20px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.3s}
+    input:checked+.toggle-slider{background:var(--orange)}
+    input:checked+.toggle-slider:before{transform:translateX(20px)}
+    .exp-card{background:var(--white);border:1.5px solid #e8dfc8;border-left:5px solid #aaa;border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .exp-card.fuel{border-left-color:#f5a623}
+    .exp-card.tech{border-left-color:#2980b9}
+    .exp-card.other{border-left-color:#8e44ad}
+    .period-tabs{display:flex;gap:6px;padding:12px 16px 0;background:var(--white);}
+    .period-tab{flex:1;padding:8px 4px;border:1.5px solid #ddd0b0;border-radius:8px;font-family:inherit;font-size:0.72rem;font-weight:700;cursor:pointer;background:var(--gray-light);color:var(--gray);transition:all 0.2s;}
+    .period-tab.active{background:var(--orange);color:var(--black);border-color:var(--orange);}
+    .section-sep{font-size:0.78rem;font-weight:700;color:var(--gray);margin:16px 0 10px;padding-bottom:4px;border-bottom:2px solid var(--orange-light);}
+  </style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="login-screen">
+  <div class="login-logo">🛺</div>
+  <div class="login-title">ባጃጅ ትራከር</div>
+  <div class="login-sub">የጉዞ መዝገብ ስርዓት</div>
+  <div class="login-card">
+    <label class="login-label">📱 ስልክ ቁጥር</label>
+    <input class="login-input" id="l-phone" type="tel" placeholder="09XXXXXXXX" />
+    <label class="login-label">🔑 PIN</label>
+    <input class="login-input" id="l-pin" type="password" placeholder="••••" maxlength="6" />
+    <button class="login-btn" onclick="doLogin()">ግባ →</button>
+    <div class="login-err" id="login-err"></div>
+    <div class="login-hint">👆 አስተዳዳሪ ብቻ ሊገባ ይችላል</div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app-screen">
+
+
+  <div class="header">
+    <div>
+      <div class="header-title">🛺 ባጃጅ ትራከር</div>
+      <div class="header-subtitle" id="header-user">—</div>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn" title="History" onclick="openHistory()">🕐</button>
+      <button class="icon-btn" title="ውጣ" onclick="doLogout()">🚪</button>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn active" onclick="showPage('add')"><span class="nav-icon">➕</span>ጨምር</button>
+    <button class="nav-btn" onclick="showPage('list')"><span class="nav-icon">📋</span>ጉዞዎች</button>
+    <button class="nav-btn" onclick="showPage('report')"><span class="nav-icon">📊</span>ሪፖርት</button>
+    <button class="nav-btn" onclick="showPage('expenses')"><span class="nav-icon">💸</span>ወጪዎች</button>
+    <button class="nav-btn" onclick="showPage('settings')"><span class="nav-icon">⚙️</span>ቅንብር</button>
+  </div>
+
+  <!-- ADD -->
+  <div class="page active" id="page-add">
+    <div class="card">
+      <div class="form-group"><label class="form-label">👤 የደንበኛ ስም</label><input class="form-input" id="f-customer" type="text" placeholder="ለምሳሌ፡ አበበ"/></div>
+      <div class="form-group"><label class="form-label">📍 የደረሰበት ቦታ</label><input class="form-input" id="f-place" type="text" placeholder="ለምሳሌ፡ ሜክሲኮ፣ ቦሌ..."/></div>
+      <div class="form-group"><label class="form-label">💰 ክፍያ (ብር)</label><input class="form-input" id="f-price" type="number" placeholder="0" min="0"/></div>
+      <div class="form-group"><label class="form-label">📦 ጭነት / መጠን</label><input class="form-input" id="f-cargo" type="text" placeholder="ለምሳሌ፡ 2 ሳጥን..."/></div>
+      <div class="grid2">
+        <div class="form-group"><label class="form-label">📅 ቀን</label><input class="form-input" id="f-date" type="date"/></div>
+        <div class="form-group"><label class="form-label">🕐 ሰዓት</label><input class="form-input" id="f-time" type="time"/></div>
+      </div>
+      <span class="pay-toggle-label">💳 የክፍያ ሁኔታ</span>
+      <div class="pay-toggle">
+        <button class="pay-btn paid" id="add-paid-btn" onclick="setAddPay('paid')">✅ ከፍሏል</button>
+        <button class="pay-btn" id="add-unpaid-btn" onclick="setAddPay('unpaid')">❌ አልከፈለም</button>
+      </div>
+      <input type="hidden" id="f-payment" value="paid"/>
+      <button class="btn btn-primary" onclick="addTrip()">✅ ጉዞ ተመዝግቧል</button>
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <div class="page" id="page-list">
+    <input class="search-input" id="search-input" type="text" placeholder="🔍 ደንበኛ ወይም ቦታ ፈልግ..." oninput="renderList()"/>
+    <div class="filter-row">
+      <span class="filter-label">ወር:</span>
+      <select class="form-select" id="filter-month" onchange="renderList()"><option value="">ሁሉም</option></select>
+      <select class="form-select" id="filter-pay" onchange="renderList()">
+        <option value="">ሁሉም ክፍያ</option>
+        <option value="paid">✅ ከፍሏል</option>
+        <option value="unpaid">❌ አልከፈለም</option>
+      </select>
+    </div>
+    <div class="section-title">ጉዞዎች <span class="count-badge" id="trip-count">0</span></div>
+    <div id="trip-list"></div>
+  </div>
+
+  <!-- REPORT -->
+  <div class="page" id="page-report">
+    <div class="period-tabs">
+      <button class="period-tab active" onclick="setPeriod('day')">📅 ቀን</button>
+      <button class="period-tab" onclick="setPeriod('week')">📆 ሳምንት</button>
+      <button class="period-tab" onclick="setPeriod('month')">🗓️ ወር</button>
+      <button class="period-tab" onclick="setPeriod('all')">🗂️ ሁሉም</button>
+    </div>
+    <div class="month-select-row" id="month-picker-row" style="display:none">
+      <span class="month-label">ወር ምረጥ:</span>
+      <select class="form-select" id="report-month" onchange="renderReport()"><option value="">ሁሉም ጊዜ</option></select>
+    </div>
+    <div class="card" id="chart-card" style="padding:12px">
+      <div class="report-section-title" style="margin-top:0">📊 ወርሃዊ ገቢ (ብር)</div>
+      <div style="overflow-x:auto"><canvas id="revenue-chart" height="160"></canvas></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:12px">
+      <button class="btn btn-secondary" style="font-size:0.82rem;padding:10px" onclick="exportExcel()">📥 Excel</button>
+      <button class="btn btn-secondary" style="font-size:0.82rem;padding:10px" onclick="exportPDF()">📄 PDF</button>
+    </div>
+    <div id="report-content"></div>
+  </div>
+
+  <!-- EXPENSES -->
+  <div class="page" id="page-expenses">
+    <!-- Summary strip -->
+    <div class="stats-grid" id="exp-summary" style="padding:12px 16px 0"></div>
+    <!-- Add expense -->
+    <div class="card" style="margin:12px 16px 0">
+      <div class="section-title" style="margin-bottom:12px">➕ ወጪ ጨምር</div>
+      <div class="form-group">
+        <label class="form-label">🏷️ ዓይነት</label>
+        <select class="form-select" id="ex-type">
+          <option value="fuel">⛽ ነዳጅ</option>
+          <option value="tech">🔧 ቴክኒሻን</option>
+          <option value="other">📦 ሌላ</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">💰 መጠን (ብር)</label><input class="form-input" id="ex-amount" type="number" placeholder="0" min="0"/></div>
+      <div class="form-group"><label class="form-label">📝 ማብራሪያ</label><input class="form-input" id="ex-note" type="text" placeholder="ለምሳሌ፡ ሙሉ ታንክ..."/></div>
+      <div class="form-group"><label class="form-label">📅 ቀን</label><input class="form-input" id="ex-date" type="date"/></div>
+      <button class="btn btn-primary" onclick="addExpense()">💾 ወጪ ምዝገባ</button>
+    </div>
+    <!-- Filter -->
+    <div class="filter-row" style="padding:12px 16px 0">
+      <select class="form-select" id="ex-filter-type" onchange="renderExpenses()">
+        <option value="">ሁሉም ዓይነት</option>
+        <option value="fuel">⛽ ነዳጅ</option>
+        <option value="tech">🔧 ቴክኒሻን</option>
+        <option value="other">📦 ሌላ</option>
+      </select>
+      <select class="form-select" id="ex-filter-month" onchange="renderExpenses()"><option value="">ሁሉም ወር</option></select>
+    </div>
+    <div style="padding:0 16px 16px" id="exp-list"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="page" id="page-settings">
+    <!-- Notification -->
+    <div class="section-sep">🔔 ዕለታዊ ማሳወቂያ — Telegram</div>
+    <div class="card">
+      <div class="settings-row">
+        <div><div class="settings-label">ዕለታዊ ማጠቃለያ</div><div class="settings-sub">Telegram bot — ጉዞ፣ ገቢ፣ ወጪ</div></div>
+        <label class="toggle-switch"><input type="checkbox" id="notif-toggle" onchange="toggleNotification()"/><span class="toggle-slider"></span></label>
+      </div>
+      <div class="form-group" style="margin-top:10px">
+        <label class="form-label">🕐 ሰዓት (ማሳወቂያ ይላካል)</label>
+        <input class="form-input" id="notif-time" type="time" value="20:00" onchange="saveNotifTime()"/>
+      </div>
+      <button class="btn btn-secondary" style="font-size:0.85rem" onclick="testNotification()">📨 ሙከራ — Telegram ላክ</button>
+      <div class="tg-status" id="notif-status"></div>
+    </div>
+
+    <!-- Import from Telegram -->
+    <div class="section-sep">📥 ከ Telegram ፋይል አምጣ</div>
+    <div class="card">
+      <div class="import-box" onclick="document.getElementById('import-file').click()">
+        <div class="import-box-icon">📂</div>
+        <div class="import-box-text">JSON ፋይል ምረጥ<br><small>(bajaj_backup_…json)</small></div>
+      </div>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)"/>
+      <div class="tg-status" id="import-status"></div>
+    </div>
+
+    <!-- Admins -->
+    <div class="section-sep">👥 አስተዳዳሪዎች</div>
+    <div class="card">
+      <div id="admin-list"></div>
+      <button class="btn btn-primary" style="margin-top:8px" onclick="openAddAdmin()">➕ አስተዳዳሪ ጨምር</button>
+    </div>
+
+    <!-- Change own PIN -->
+    <div class="section-sep">🔑 የኔ PIN ቀይር</div>
+    <div class="card">
+      <div class="form-group"><label class="form-label">አሁን ያለ PIN</label><input class="form-input" id="s-old-pin" type="password" placeholder="••••" maxlength="6"/></div>
+      <div class="form-group"><label class="form-label">አዲስ PIN</label><input class="form-input" id="s-new-pin" type="password" placeholder="••••" maxlength="6"/></div>
+      <div class="form-group"><label class="form-label">አዲስ PIN ደግም</label><input class="form-input" id="s-new-pin2" type="password" placeholder="••••" maxlength="6"/></div>
+      <button class="btn btn-primary" onclick="changePin()">🔑 PIN ቀይር</button>
+      <div class="tg-status" id="pin-status"></div>
+    </div>
+
+    <!-- Logout -->
+    <div class="section-sep"></div>
+    <button class="btn btn-danger-full" onclick="doLogout()" style="margin-bottom:32px">🚪 ውጣ</button>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title">✏️ ጉዞ አስተካክል</div>
+    <input type="hidden" id="edit-id"/>
+    <div class="form-group"><label class="form-label">👤 ደንበኛ ስም</label><input class="form-input" id="e-customer" type="text"/></div>
+    <div class="form-group"><label class="form-label">📍 ቦታ</label><input class="form-input" id="e-place" type="text"/></div>
+    <div class="form-group"><label class="form-label">💰 ክፍያ (ብር)</label><input class="form-input" id="e-price" type="number" min="0"/></div>
+    <div class="form-group"><label class="form-label">📦 ጭነት / መጠን</label><input class="form-input" id="e-cargo" type="text"/></div>
+    <div class="grid2">
+      <div class="form-group"><label class="form-label">📅 ቀን</label><input class="form-input" id="e-date" type="date"/></div>
+      <div class="form-group"><label class="form-label">🕐 ሰዓት</label><input class="form-input" id="e-time" type="time"/></div>
+    </div>
+    <span class="pay-toggle-label">💳 የክፍያ ሁኔታ</span>
+    <div class="pay-toggle">
+      <button class="pay-btn" id="edit-paid-btn" onclick="setEditPay('paid')">✅ ከፍሏል</button>
+      <button class="pay-btn" id="edit-unpaid-btn" onclick="setEditPay('unpaid')">❌ አልከፈለም</button>
+    </div>
+    <input type="hidden" id="e-payment" value="paid"/>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('edit-modal')">ሰርዝ</button>
+      <button class="btn-save" onclick="saveEdit()">💾 አስቀምጥ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD ADMIN MODAL -->
+<div class="modal-overlay" id="admin-modal">
+  <div class="modal">
+    <div class="modal-title">➕ አዲስ አስተዳዳሪ</div>
+    <div class="form-group"><label class="form-label">📱 ስልክ ቁጥር</label><input class="form-input" id="a-phone" type="tel" placeholder="09XXXXXXXX"/></div>
+    <div class="form-group"><label class="form-label">🔑 PIN (4–6 ዲጂት)</label><input class="form-input" id="a-pin" type="password" placeholder="••••" maxlength="6"/></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('admin-modal')">ሰርዝ</button>
+      <button class="btn-save" onclick="saveAdmin()">💾 አስቀምጥ</button>
+    </div>
+    <div class="tg-status" id="admin-status"></div>
+  </div>
+</div>
+
+<!-- HISTORY MODAL -->
+<div class="modal-overlay" id="history-modal">
+  <div class="modal">
+    <div class="modal-title">🕐 የቅርብ ጊዜ ለውጦች</div>
+    <div id="history-list"></div>
+    <div style="margin-top:16px">
+      <button class="btn-cancel" onclick="closeModal('history-modal')">ዝጋ</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const TG_TOKEN = '8892787439:AAH6HJ7JD6y6MxtRKt4SFfymtuSUDTK4EiU';
+  const TG_CHAT  = '1060051687';
+
+  // ---- MANIFEST ----
+  const mBlob = new Blob([JSON.stringify({
+    name:"ባጃጅ ትራከር",short_name:"ባጃጅ",description:"የባጃጅ ዲሊቨሪ ጉዞ መዝገብ",
+    start_url:"./",display:"standalone",background_color:"#1a1208",theme_color:"#f5a623",
+    orientation:"portrait",lang:"am",
+    icons:[
+      {src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%231a1208'/%3E%3Ctext x='96' y='130' font-size='110' text-anchor='middle'%3E%F0%9F%9B%BA%3C/text%3E%3C/svg%3E",sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"},
+      {src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%231a1208'/%3E%3Ctext x='256' y='340' font-size='300' text-anchor='middle'%3E%F0%9F%9B%BA%3C/text%3E%3C/svg%3E",sizes:"512x512",type:"image/svg+xml",purpose:"any maskable"}
+    ]
+  })],{type:'application/json'});
+  document.getElementById('pwa-manifest').href = URL.createObjectURL(mBlob);
+
+  // ---- SW ----
+  if('serviceWorker' in navigator){
+    const sw=`const C='bajaj-v4';self.addEventListener('install',e=>{self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(c=>c!==C).map(c=>caches.delete(c)))));self.clients.claim();});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));});`;
+    navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{});
+  }
+
+  // ---- STORAGE HELPERS ----
+  function getAdmins(){ return JSON.parse(localStorage.getItem('bajaj_admins')||'[]'); }
+  function saveAdmins(a){ localStorage.setItem('bajaj_admins',JSON.stringify(a)); }
+  function getTrips(){ return JSON.parse(localStorage.getItem('bajaj_trips')||'[]'); }
+  function saveTrips(t){ localStorage.setItem('bajaj_trips',JSON.stringify(t)); }
+  function hashPin(pin){ return btoa(pin+'_bajaj_salt_2026'); } // simple obfuscation
+
+  let trips = getTrips();
+  let currentUser = null;
+  let deleteHistory = []; // [{trip, index, action:'delete'|'edit', oldTrip}]
+
+  // ---- SESSION PERSIST ----
+  function saveSession(user){ sessionStorage.setItem('bajaj_session', JSON.stringify(user)); }
+  function clearSession(){ sessionStorage.removeItem('bajaj_session'); }
+  function getSession(){ try{ return JSON.parse(sessionStorage.getItem('bajaj_session')); }catch(e){ return null; } }
+
+
+  // ---- FIRST SETUP: seed default admin if none ----
+  function ensureDefaultAdmin(){
+    const admins = getAdmins();
+    if(admins.length===0){
+      // default: phone=0985460703 pin=1234  (user can change)
+      saveAdmins([{phone:'0985460703', pin:hashPin('1234'), name:'አስተዳዳሪ'}]);
+    }
+  }
+  ensureDefaultAdmin();
+
+  // ---- LOGIN ----
+  function doLogin(){
+    const phone = document.getElementById('l-phone').value.trim();
+    const pin   = document.getElementById('l-pin').value.trim();
+    const err   = document.getElementById('login-err');
+    if(!phone||!pin){ err.textContent='❗ ስልክ ቁጥር እና PIN ያስፈልጋሉ'; return; }
+    const admins = getAdmins();
+    const found  = admins.find(a => a.phone===phone && a.pin===hashPin(pin));
+    if(!found){ err.textContent='❌ ስልክ ቁጥር ወይም PIN ትክክል አይደለም'; return; }
+    currentUser = found;
+    saveSession(found);
+    err.textContent='';
+    document.getElementById('l-pin').value='';
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app-screen').style.display='block';
+    document.getElementById('header-user').textContent = found.phone;
+    trips = getTrips();
+    populateMonthSelects(); renderList(); renderReport(); renderAdminList();
+    showPage('add');
+  }
+  document.getElementById('l-pin').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+  function doLogout(){
+    currentUser=null;
+    clearSession();
+    document.getElementById('app-screen').style.display='none';
+    document.getElementById('login-screen').style.display='flex';
+    document.getElementById('l-phone').value='';
+    document.getElementById('l-pin').value='';
+  }
+
+  // ---- ADMIN MANAGEMENT ----
+  function renderAdminList(){
+    const admins=getAdmins();
+    document.getElementById('admin-list').innerHTML = admins.map((a,i)=>`
+      <div class="user-row">
+        <div><div class="user-info">${a.name||'አስተዳዳሪ'}</div><div class="user-phone">${a.phone}</div></div>
+        ${admins.length>1?`<button class="btn-sm-danger" onclick="removeAdmin(${i})">🗑️</button>`:'<span style="font-size:0.7rem;color:#aaa">ዋና</span>'}
+      </div>`).join('');
+  }
+  function openAddAdmin(){ document.getElementById('a-phone').value=''; document.getElementById('a-pin').value=''; document.getElementById('admin-status').textContent=''; document.getElementById('admin-modal').classList.add('open'); }
+  function saveAdmin(){
+    const phone=document.getElementById('a-phone').value.trim();
+    const pin=document.getElementById('a-pin').value.trim();
+    const st=document.getElementById('admin-status');
+    if(!phone||!pin){ st.textContent='❗ ሁሉም መሞላት አለበት'; st.className='tg-status err'; return; }
+    if(pin.length<4){ st.textContent='❗ PIN ቢያንስ 4 ዲጂት'; st.className='tg-status err'; return; }
+    const admins=getAdmins();
+    if(admins.find(a=>a.phone===phone)){ st.textContent='❗ ስልኩ ቀደም ብሎ አለ'; st.className='tg-status err'; return; }
+    admins.push({phone, pin:hashPin(pin), name:'አስተዳዳሪ'});
+    saveAdmins(admins); renderAdminList(); closeModal('admin-modal'); showToast('✅ አስተዳዳሪ ተጨምሯል');
+  }
+  function removeAdmin(i){
+    if(!confirm('ይህን አስተዳዳሪ ለማስወገድ?')) return;
+    const admins=getAdmins(); admins.splice(i,1); saveAdmins(admins); renderAdminList(); showToast('🗑️ ተሰርዟል');
+  }
+
+  // ---- CHANGE PIN ----
+  function changePin(){
+    const oldPin=document.getElementById('s-old-pin').value.trim();
+    const newPin=document.getElementById('s-new-pin').value.trim();
+    const newPin2=document.getElementById('s-new-pin2').value.trim();
+    const st=document.getElementById('pin-status');
+    if(!oldPin||!newPin||!newPin2){ st.textContent='❗ ሁሉም መሞላት አለበት'; st.className='tg-status err'; return; }
+    if(newPin.length<4){ st.textContent='❗ PIN ቢያንስ 4 ዲጂት'; st.className='tg-status err'; return; }
+    if(newPin!==newPin2){ st.textContent='❗ አዲስ PIN አይስማማም'; st.className='tg-status err'; return; }
+    const admins=getAdmins();
+    const idx=admins.findIndex(a=>a.phone===currentUser.phone && a.pin===hashPin(oldPin));
+    if(idx===-1){ st.textContent='❌ አሁን ያለ PIN ትክክል አይደለም'; st.className='tg-status err'; return; }
+    admins[idx].pin=hashPin(newPin);
+    saveAdmins(admins); currentUser=admins[idx];
+    document.getElementById('s-old-pin').value='';
+    document.getElementById('s-new-pin').value='';
+    document.getElementById('s-new-pin2').value='';
+    st.textContent='✅ PIN ተቀይሯል!'; st.className='tg-status ok';
+    setTimeout(()=>{ st.textContent=''; },3000);
+  }
+
+  // ---- IMPORT JSON ----
+  function importJSON(event){
+    const file=event.target.files[0]; if(!file) return;
+    const st=document.getElementById('import-status');
+    st.textContent='📂 እየተነበበ...'; st.className='tg-status';
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const data=JSON.parse(e.target.result);
+        const imported = Array.isArray(data) ? data : (data.trips||[]);
+        if(!imported.length){ st.textContent='⚠️ ጉዞ አልተገኘም'; st.className='tg-status err'; return; }
+        // merge: skip duplicates by id
+        const existing=new Set(trips.map(t=>t.id));
+        let added=0;
+        imported.forEach(t=>{ if(!existing.has(t.id)){ trips.unshift(t); added++; } });
+        saveTrips(trips); populateMonthSelects(); renderList(); renderReport();
+        st.textContent=`✅ ${added} ጉዞ ተጨምሯል`; st.className='tg-status ok';
+        showToast(`✅ ${added} ጉዞ ተጨምሯል`);
+      } catch(err){
+        st.textContent='❌ ፋይሉ ትክክል አይደለም'; st.className='tg-status err';
+      }
+      event.target.value='';
+      setTimeout(()=>{ st.textContent=''; },4000);
+    };
+    reader.readAsText(file);
+  }
+
+  // ---- TELEGRAM AUTO SEND ----
+  async function sendTripMessage(trip, action='new'){
+    const ip=(trip.payment||'paid')==='paid';
+    const actionLabel={'new':'➕ አዲስ ጉዞ','edit':'✏️ ጉዞ ተስተካክሏል','delete':'🗑️ ጉዞ ተሰርዟል'}[action]||action;
+    const msg=
+      `🛺 *${actionLabel}*\n`+
+      `👤 ደንበኛ: *${trip.customer}*\n`+
+      `📍 ቦታ: ${trip.place}\n`+
+      `💰 ክፍያ: *${(trip.price||0).toLocaleString()} ብር*\n`+
+      `${ip?'✅ ከፍሏል':'❌ አልከፈለም'}\n`+
+      `📦 ጭነት: ${trip.cargo||'—'}\n`+
+      `📅 ${trip.date||'—'} ${trip.time?'· '+trip.time:''}`;
+    try{
+      await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({chat_id:TG_CHAT, text:msg, parse_mode:'Markdown'})
+      });
+    }catch(e){}
+  }
+
+  async function sendExpenseMessage(exp){
+    const EL={fuel:'⛽ ነዳጅ',tech:'🔧 ቴክኒሻን',other:'📦 ሌላ'};
+    const msg=
+      `💸 *አዲስ ወጪ ተመዝግቧል*\n`+
+      `🏷️ ዓይነት: *${EL[exp.type]||exp.type}*\n`+
+      `💰 መጠን: *${(exp.amount||0).toLocaleString()} ብር*\n`+
+      `📝 ማብራሪያ: ${exp.note||'—'}\n`+
+      `📅 ${exp.date||'—'}`;
+    try{
+      await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({chat_id:TG_CHAT, text:msg, parse_mode:'Markdown'})
+      });
+    }catch(e){}
+  }
+
+  // backup file (manual) — still available for import
+  async function sendToTelegram(statusElId){
+    const st=document.getElementById(statusElId);
+    if(st){ st.textContent='📤 Backup እየተላከ...'; st.className='tg-status'; }
+    try{
+      const now=new Date();
+      const ds=`${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+      const phone=currentUser?currentUser.phone:'unknown';
+      const fname=`bajaj_backup_${phone}_${ds}.json`;
+      const backupData={app:'ባጃጅ ትራከር',exported:now.toLocaleString('en-GB'),phone,total_trips:trips.length,trips};
+      const fd=new FormData();
+      fd.append('chat_id',TG_CHAT);
+      fd.append('document',new Blob([JSON.stringify(backupData,null,2)],{type:'application/json'}),fname);
+      fd.append('caption',`🛺 Backup · ${now.toLocaleString('en-GB')} · ጠቅላላ: ${trips.length} ጉዞ`);
+      const r=await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendDocument`,{method:'POST',body:fd});
+      const res=await r.json();
+      if(res.ok){ if(st){ st.textContent='✅ Backup ደረሰ!'; st.className='tg-status ok'; } }
+      else{ if(st){ st.textContent='⚠️ '+res.description; st.className='tg-status err'; } }
+    }catch(e){ if(st){ st.textContent='❌ ኔትወርክ ስህተት'; st.className='tg-status err'; } }
+    setTimeout(()=>{ if(st) st.textContent=''; },4000);
+  }
+
+  // ---- ADD TRIP ----
+  function addTrip(){
+    const customer=document.getElementById('f-customer').value.trim();
+    const place=document.getElementById('f-place').value.trim();
+    const price=parseFloat(document.getElementById('f-price').value)||0;
+    const cargo=document.getElementById('f-cargo').value.trim();
+    const date=document.getElementById('f-date').value;
+    const time=document.getElementById('f-time').value;
+    const payment=document.getElementById('f-payment').value;
+    if(!customer||!place){ showToast('❗ ደንበኛ ስም እና ቦታ ያስፈልጋሉ'); return; }
+    const newTrip={id:Date.now().toString(36)+Math.random().toString(36).slice(2),customer,place,price,cargo,date,time,payment};
+    trips.unshift(newTrip);
+    saveTrips(trips); populateMonthSelects(); showToast('✅ ጉዞ ተመዝግቧል!');
+    sendTripMessage(newTrip,'new');
+    document.getElementById('f-customer').value='';
+    document.getElementById('f-place').value='';
+    document.getElementById('f-price').value='';
+    document.getElementById('f-cargo').value='';
+    const now=new Date();
+    document.getElementById('f-date').value=now.toISOString().slice(0,10);
+    document.getElementById('f-time').value=now.toTimeString().slice(0,5);
+    setAddPay('paid');
+  }
+
+  // ---- PAY TOGGLE ----
+  function setAddPay(v){
+    document.getElementById('f-payment').value=v;
+    document.getElementById('add-paid-btn').className='pay-btn'+(v==='paid'?' paid':'');
+    document.getElementById('add-unpaid-btn').className='pay-btn'+(v==='unpaid'?' unpaid':'');
+  }
+  function setEditPay(v){
+    document.getElementById('e-payment').value=v;
+    document.getElementById('edit-paid-btn').className='pay-btn'+(v==='paid'?' paid':'');
+    document.getElementById('edit-unpaid-btn').className='pay-btn'+(v==='unpaid'?' unpaid':'');
+  }
+  setAddPay('paid');
+
+  // ---- MONTHS ----
+  function getMonths(){ const m=new Set(); trips.forEach(t=>{if(t.date)m.add(t.date.slice(0,7));}); return [...m].sort().reverse(); }
+  function monthLabel(ym){ if(!ym)return''; const[y,m]=ym.split('-'); return['ጃንዋሪ','ፌብሩዋሪ','ማርች','ኤፕሪል','ሜይ','ጁን','ጁላይ','ኦገስት','ሴፕቴምበር','ኦክቶበር','ኖቬምበር','ዲሴምበር'][parseInt(m)-1]+' '+y; }
+  function populateMonthSelects(){
+    const months=getMonths();
+    ['filter-month','report-month'].forEach(id=>{
+      const el=document.getElementById(id),cur=el.value;
+      el.innerHTML='<option value="">ሁሉም ጊዜ</option>';
+      months.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=monthLabel(m);el.appendChild(o);});
+      el.value=cur;
+    });
+  }
+
+  // ---- LIST ----
+  function renderList(){
+    const q=document.getElementById('search-input').value.trim().toLowerCase();
+    const month=document.getElementById('filter-month').value;
+    const pay=document.getElementById('filter-pay').value;
+    const filtered=trips.filter(t=>{
+      return (!q||t.customer.toLowerCase().includes(q)||t.place.toLowerCase().includes(q))
+          &&(!month||(t.date&&t.date.startsWith(month)))
+          &&(!pay||(t.payment||'paid')===pay);
+    });
+    document.getElementById('trip-count').textContent=filtered.length;
+    const c=document.getElementById('trip-list');
+    if(!filtered.length){ c.innerHTML='<div class="empty-state"><div class="empty-icon">🛺</div><div>ምንም ጉዞ አልተመዘገበም</div></div>'; return; }
+    c.innerHTML=filtered.map(t=>{
+      const ip=(t.payment||'paid')==='paid';
+      return `<div class="trip-card ${ip?'':'unpaid-card'}">
+        <div class="trip-top">
+          <div class="trip-customer">👤 ${t.customer}<span class="pay-badge ${ip?'paid':'unpaid'}">${ip?'✅ ከፍሏል':'❌ አልከፈለም'}</span></div>
+          <div class="trip-price">💰 ${t.price.toLocaleString()} ብር</div>
+        </div>
+        <div class="trip-details">📍 ${t.place}<br>📦 ${t.cargo||'—'}<br>📅 ${t.date||'—'} ${t.time?'· '+t.time:''}</div>
+        <div class="trip-actions">
+          <button class="btn-sm-edit" onclick="openEdit('${t.id}')">✏️ አስተካክል</button>
+          <button class="btn-sm-danger" onclick="deleteTrip('${t.id}')">🗑️ ሰርዝ</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ---- DELETE ----
+  function deleteTrip(id){
+    if(!confirm('ይህን ጉዞ ለመሰረዝ?')) return;
+    const idx = trips.findIndex(t=>t.id===id);
+    if(idx===-1) return;
+    const removed = trips[idx];
+    deleteHistory.push({type:'delete', trip:removed, index:idx});
+    if(deleteHistory.length>20) deleteHistory.shift();
+    trips=trips.filter(t=>t.id!==id);
+    saveTrips(trips); populateMonthSelects(); renderList(); renderReport();
+    sendTripMessage(removed,'delete');
+    showUndoToast(`🗑️ ጉዞ ተሰርዟል`);
+  }
+
+  // ---- EDIT ----
+  function openEdit(id){
+    const t=trips.find(x=>x.id===id); if(!t) return;
+    document.getElementById('edit-id').value=id;
+    document.getElementById('e-customer').value=t.customer;
+    document.getElementById('e-place').value=t.place;
+    document.getElementById('e-price').value=t.price;
+    document.getElementById('e-cargo').value=t.cargo||'';
+    document.getElementById('e-date').value=t.date||'';
+    document.getElementById('e-time').value=t.time||'';
+    setEditPay(t.payment||'paid');
+    document.getElementById('edit-modal').classList.add('open');
+  }
+  function saveEdit(){
+    const id=document.getElementById('edit-id').value;
+    const idx=trips.findIndex(x=>x.id===id); if(idx===-1) return;
+    deleteHistory.push({type:'edit', trip:{...trips[idx]}, index:idx});
+    if(deleteHistory.length>20) deleteHistory.shift();
+    trips[idx]={...trips[idx],
+      customer:document.getElementById('e-customer').value.trim(),
+      place:document.getElementById('e-place').value.trim(),
+      price:parseFloat(document.getElementById('e-price').value)||0,
+      cargo:document.getElementById('e-cargo').value.trim(),
+      date:document.getElementById('e-date').value,
+      time:document.getElementById('e-time').value,
+      payment:document.getElementById('e-payment').value,
+    };
+    saveTrips(trips); renderList(); renderReport(); showUndoToast('✅ ጉዞ ተስተካክሏል');
+    sendTripMessage(trips[idx],'edit');
+    setTimeout(()=>closeModal('edit-modal'),3500);
+  }
+
+  // ---- EXPENSES ----
+  function getExpenses(){ return JSON.parse(localStorage.getItem('bajaj_expenses')||'[]'); }
+  function saveExpenses(e){ localStorage.setItem('bajaj_expenses',JSON.stringify(e)); }
+
+  const EXP_LABELS = {fuel:'⛽ ነዳጅ', tech:'🔧 ቴክኒሻን', other:'📦 ሌላ'};
+  const EXP_CLASS  = {fuel:'fuel', tech:'tech', other:'other'};
+
+  function addExpense(){
+    const type   = document.getElementById('ex-type').value;
+    const amount = parseFloat(document.getElementById('ex-amount').value)||0;
+    const note   = document.getElementById('ex-note').value.trim();
+    const date   = document.getElementById('ex-date').value;
+    if(!amount||!date){ showToast('❗ መጠን እና ቀን ያስፈልጋሉ'); return; }
+    const exps = getExpenses();
+    const newExp={id:Date.now().toString(36), type, amount, note, date};
+    exps.unshift(newExp);
+    saveExpenses(exps);
+    sendExpenseMessage(newExp);
+    document.getElementById('ex-amount').value='';
+    document.getElementById('ex-note').value='';
+    renderExpenses(); showToast('✅ ወጪ ተመዝግቧል!');
+  }
+
+  function deleteExpense(id){
+    if(!confirm('ይህን ወጪ ለመሰረዝ?')) return;
+    saveExpenses(getExpenses().filter(e=>e.id!==id));
+    renderExpenses(); showToast('🗑️ ወጪ ተሰርዟል');
+  }
+
+  function renderExpenses(){
+    const filterType  = document.getElementById('ex-filter-type').value;
+    const filterMonth = document.getElementById('ex-filter-month').value;
+    let exps = getExpenses().filter(e=>
+      (!filterType||e.type===filterType)&&
+      (!filterMonth||e.date.startsWith(filterMonth))
+    );
+    // summary
+    const total = exps.reduce((s,e)=>s+e.amount,0);
+    const fuel  = exps.filter(e=>e.type==='fuel').reduce((s,e)=>s+e.amount,0);
+    const tech  = exps.filter(e=>e.type==='tech').reduce((s,e)=>s+e.amount,0);
+    document.getElementById('exp-summary').innerHTML=`
+      <div class="stat-card"><div class="stat-value">${total.toLocaleString()}</div><div class="stat-label">ጠቅላላ ወጪ (ብር)</div></div>
+      <div class="stat-card" style="background:#c0392b"><div class="stat-value">${fuel.toLocaleString()}</div><div class="stat-label">⛽ ነዳጅ</div></div>
+      <div class="stat-card" style="background:#2980b9"><div class="stat-value">${tech.toLocaleString()}</div><div class="stat-label">🔧 ቴክኒሻን</div></div>
+      <div class="stat-card" style="background:#8e44ad"><div class="stat-value">${exps.filter(e=>e.type==='other').reduce((s,e)=>s+e.amount,0).toLocaleString()}</div><div class="stat-label">📦 ሌላ</div></div>`;
+    if(!exps.length){
+      document.getElementById('exp-list').innerHTML='<div class="empty-state"><div class="empty-icon">💸</div><div>ምንም ወጪ አልተመዘገበም</div></div>';
+      return;
+    }
+    document.getElementById('exp-list').innerHTML=exps.map(e=>`
+      <div class="exp-card ${EXP_CLASS[e.type]||'other'}">
+        <div>
+          <div style="font-weight:700;font-size:0.9rem">${EXP_LABELS[e.type]||e.type} ${e.note?'· '+e.note:''}</div>
+          <div style="font-size:0.75rem;color:var(--gray)">📅 ${e.date}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-weight:900;color:var(--red)">${e.amount.toLocaleString()} ብር</span>
+          <button class="btn-sm-danger" style="padding:5px 10px" onclick="deleteExpense('${e.id}')">🗑️</button>
+        </div>
+      </div>`).join('');
+  }
+
+  function populateExpenseMonths(){
+    const exps=getExpenses();
+    const months=[...new Set(exps.map(e=>e.date?e.date.slice(0,7):null).filter(Boolean))].sort().reverse();
+    const sel=document.getElementById('ex-filter-month');
+    const cur=sel.value;
+    sel.innerHTML='<option value="">ሁሉም ወር</option>';
+    months.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=monthLabel(m);sel.appendChild(o);});
+    sel.value=cur;
+  }
+
+  // ---- NOTIFICATION (Telegram-based) ----
+  let notifCheckInterval=null;
+
+  function saveNotifTime(){
+    localStorage.setItem('bajaj_notif_time', document.getElementById('notif-time').value);
+  }
+
+  function toggleNotification(){
+    const on=document.getElementById('notif-toggle').checked;
+    localStorage.setItem('bajaj_notif_on', on?'1':'0');
+    const st=document.getElementById('notif-status');
+    if(on){
+      st.textContent='✅ ዕለታዊ ማሳወቂያ ተከፍቷል'; st.className='tg-status ok';
+      startNotifScheduler();
+    } else {
+      if(notifCheckInterval){ clearInterval(notifCheckInterval); notifCheckInterval=null; }
+      st.textContent='🔕 ማሳወቂያ ተዘግቷል'; st.className='tg-status';
+    }
+    setTimeout(()=>{ if(st) st.textContent=''; },3000);
+  }
+
+  function startNotifScheduler(){
+    if(notifCheckInterval) clearInterval(notifCheckInterval);
+    notifCheckInterval=setInterval(()=>{
+      if(localStorage.getItem('bajaj_notif_on')!=='1') return;
+      const now=new Date();
+      const hm=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      const target=localStorage.getItem('bajaj_notif_time')||'20:00';
+      const lastSent=localStorage.getItem('bajaj_notif_last');
+      const today=now.toISOString().slice(0,10);
+      if(hm===target && lastSent!==today){
+        localStorage.setItem('bajaj_notif_last', today);
+        sendDailySummaryToTelegram();
+      }
+    }, 30000);
+  }
+
+  function buildDailySummary(){
+    const today=new Date().toISOString().slice(0,10);
+    const todayTrips=trips.filter(t=>t.date===today);
+    const todayRevenue=todayTrips.reduce((s,t)=>s+(t.price||0),0);
+    const todayExpenses=getExpenses().filter(e=>e.date===today).reduce((s,e)=>s+e.amount,0);
+    const net=todayRevenue-todayExpenses;
+    const paidCount=todayTrips.filter(t=>(t.payment||'paid')==='paid').length;
+    const unpaidCount=todayTrips.filter(t=>(t.payment||'paid')==='unpaid').length;
+    return {count:todayTrips.length, revenue:todayRevenue, expenses:todayExpenses, net, paidCount, unpaidCount, today};
+  }
+
+  async function sendDailySummaryToTelegram(isTest=false){
+    const st=document.getElementById('notif-status');
+    const s=buildDailySummary();
+    const msg=`🛺 *ባጃጅ ትራከር — ዕለታዊ ማጠቃለያ*\n📅 ${s.today}\n\n`+
+      `📊 ጠቅላላ ጉዞ: *${s.count}*\n`+
+      `✅ ከፍሏል: ${s.paidCount} · ❌ አልከፈለም: ${s.unpaidCount}\n\n`+
+      `💰 ዛሬ ገቢ: *${s.revenue.toLocaleString()} ብር*\n`+
+      `💸 ዛሬ ወጪ: *${s.expenses.toLocaleString()} ብር*\n`+
+      `📈 ትርፍ: *${s.net.toLocaleString()} ብር*`+
+      (isTest?'\n\n_(ሙከራ ማሳወቂያ)_':'');
+    try{
+      if(st){ st.textContent='📨 Telegram እየተላከ...'; st.className='tg-status'; }
+      const r=await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({chat_id:TG_CHAT, text:msg, parse_mode:'Markdown'})
+      });
+      const res=await r.json();
+      if(res.ok){ if(st){ st.textContent='✅ Telegram ደረሰ!'; st.className='tg-status ok'; } }
+      else{ if(st){ st.textContent='⚠️ '+res.description; st.className='tg-status err'; } }
+    }catch(e){ if(st){ st.textContent='❌ ኔትወርክ ስህተት'; st.className='tg-status err'; } }
+    setTimeout(()=>{ if(st) st.textContent=''; },4000);
+  }
+
+  function testNotification(){ sendDailySummaryToTelegram(true); }
+
+  function initNotifUI(){
+    const on=localStorage.getItem('bajaj_notif_on')==='1';
+    document.getElementById('notif-toggle').checked=on;
+    const t=localStorage.getItem('bajaj_notif_time');
+    if(t) document.getElementById('notif-time').value=t;
+    if(on) startNotifScheduler();
+  }
+
+  // ---- PERIOD ----
+  let currentPeriod = 'day';
+  function setPeriod(p){
+    currentPeriod = p;
+    document.querySelectorAll('.period-tab').forEach((b,i)=>{
+      b.classList.toggle('active', ['day','week','month','all'][i]===p);
+    });
+    document.getElementById('month-picker-row').style.display = p==='month' ? 'flex' : 'none';
+    document.getElementById('chart-card').style.display = p==='all'||p==='month' ? 'block' : 'none';
+    renderReport();
+  }
+
+  function getPeriodData(){
+    const now = new Date();
+    const today = now.toISOString().slice(0,10);
+    if(currentPeriod==='day'){
+      return trips.filter(t=>t.date===today);
+    } else if(currentPeriod==='week'){
+      const start = new Date(now); start.setDate(now.getDate()-now.getDay());
+      const end = new Date(now); end.setDate(start.getDate()+6);
+      return trips.filter(t=>{if(!t.date)return false; const d=new Date(t.date); return d>=start&&d<=end;});
+    } else if(currentPeriod==='month'){
+      const month = document.getElementById('report-month').value;
+      return trips.filter(t=>!month||(t.date&&t.date.startsWith(month)));
+    } else {
+      return trips;
+    }
+  }
+
+  // ---- CHART ----
+  let chartInstance = null;
+  function drawChart(){
+    const canvas = document.getElementById('revenue-chart');
+    const ctx = canvas.getContext('2d');
+    // monthly aggregation
+    const monthMap = {};
+    trips.forEach(t=>{
+      if(!t.date) return;
+      const ym = t.date.slice(0,7);
+      if(!monthMap[ym]) monthMap[ym]={revenue:0,count:0};
+      monthMap[ym].revenue += t.price||0;
+      monthMap[ym].count++;
+    });
+    const months = Object.keys(monthMap).sort().slice(-6);
+    if(!months.length){ canvas.style.display='none'; return; }
+    canvas.style.display='block';
+    const labels = months.map(m=>monthLabel(m).slice(0,3)+' '+m.slice(0,4));
+    const values = months.map(m=>monthMap[m].revenue);
+    const W = canvas.parentElement.offsetWidth || 340;
+    canvas.width = W; canvas.height = 160;
+    ctx.clearRect(0,0,W,160);
+    const pad={t:10,r:10,b:40,l:50};
+    const cw=W-pad.l-pad.r, ch=160-pad.t-pad.b;
+    const max=Math.max(...values,1);
+    const barW=cw/months.length*0.6, gap=cw/months.length;
+    // grid lines
+    ctx.strokeStyle='#e8dfc8'; ctx.lineWidth=1;
+    [0,0.25,0.5,0.75,1].forEach(f=>{
+      const y=pad.t+ch*(1-f);
+      ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+cw,y); ctx.stroke();
+      ctx.fillStyle='#6b5c3e'; ctx.font='10px sans-serif'; ctx.textAlign='right';
+      ctx.fillText((max*f/1000).toFixed(0)+'k',pad.l-4,y+3);
+    });
+    // bars
+    months.forEach((m,i)=>{
+      const x=pad.l+i*gap+(gap-barW)/2;
+      const bh=ch*(values[i]/max);
+      const y=pad.t+ch-bh;
+      const grad=ctx.createLinearGradient(0,y,0,y+bh);
+      grad.addColorStop(0,'#f5a623'); grad.addColorStop(1,'#d4881a');
+      ctx.fillStyle=grad;
+      ctx.beginPath(); ctx.roundRect(x,y,barW,bh,4); ctx.fill();
+      // label
+      ctx.fillStyle='#1a1208'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(labels[i],pad.l+i*gap+gap/2,160-pad.b+14);
+      // value on bar
+      if(values[i]>0){
+        ctx.fillStyle='#1a1208'; ctx.font='bold 9px sans-serif';
+        ctx.fillText((values[i]/1000).toFixed(1)+'k',x+barW/2,y-3);
+      }
+    });
+  }
+
+  // ---- REPORT ----
+  function renderReport(){
+    const data = getPeriodData();
+    const total=data.length, revenue=data.reduce((s,t)=>s+(t.price||0),0);
+    const paidD=data.filter(t=>(t.payment||'paid')==='paid');
+    const unpaidD=data.filter(t=>(t.payment||'paid')==='unpaid');
+    const placeMap={},custMap={};
+    data.forEach(t=>{
+      placeMap[t.place]=placeMap[t.place]||{count:0,amount:0};
+      placeMap[t.place].count++; placeMap[t.place].amount+=t.price||0;
+      custMap[t.customer]=custMap[t.customer]||{count:0,amount:0};
+      custMap[t.customer].count++; custMap[t.customer].amount+=t.price||0;
+    });
+    const maxPlace=Math.max(...Object.values(placeMap).map(v=>v.amount),1);
+    const placeRows=Object.entries(placeMap).sort((a,b)=>b[1].amount-a[1].amount).map(([n,v],i)=>`
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;font-weight:700;margin-bottom:3px">
+          <span><span class="rank-num">${i+1}</span> <span style="margin-left:6px">${n}</span></span>
+          <span style="color:var(--orange-deep)">${v.amount.toLocaleString()} ብር · ${v.count} ጉዞ</span>
+        </div>
+        <div style="background:#e8dfc8;border-radius:6px;height:8px;overflow:hidden">
+          <div style="background:var(--orange);height:100%;border-radius:6px;width:${Math.round(v.amount/maxPlace*100)}%;transition:width 0.5s"></div>
+        </div>
+      </div>`).join('');
+    const custRows=Object.entries(custMap).sort((a,b)=>b[1].amount-a[1].amount).slice(0,8).map(([n,v],i)=>`
+      <div class="rank-row"><span class="rank-num">${i+1}</span><span class="rank-name">${n}</span>
+      <span style="font-size:0.75rem;color:#888;margin-right:8px">${v.count} ጉዞ</span>
+      <span class="rank-val">${v.amount.toLocaleString()} ብር</span></div>`).join('');
+    const periodLabel = {'day':'ዛሬ','week':'ይህ ሳምንት','month':'ይህ ወር','all':'ሁሉም ጊዜ'}[currentPeriod];
+    document.getElementById('report-content').innerHTML=`
+      <div class="report-section-title" style="margin-top:4px">📈 ${periodLabel}</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-value">${total}</div><div class="stat-label">ጠቅላላ ጉዞ</div></div>
+        <div class="stat-card"><div class="stat-value">${(revenue/1000).toFixed(1)}k</div><div class="stat-label">ጠቅላላ ገቢ (ብር)</div></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card green-card"><div class="stat-value">${paidD.length}</div><div class="stat-label">✅ ከፍሏል<br>${paidD.reduce((s,t)=>s+(t.price||0),0).toLocaleString()} ብር</div></div>
+        <div class="stat-card red-card"><div class="stat-value">${unpaidD.length}</div><div class="stat-label">❌ አልከፈለም<br>${unpaidD.reduce((s,t)=>s+(t.price||0),0).toLocaleString()} ብር</div></div>
+      </div>
+      <div class="report-section-title">📍 በቦታ — ስታቲስቲክስ</div>
+      <div class="card" style="padding:14px">${placeRows||'<div class="empty-state" style="padding:10px">ምንም ጉዞ የለም</div>'}</div>
+      <div class="report-section-title">👤 ምርጥ ደንበኞች</div>
+      ${custRows||'<div class="empty-state" style="padding:10px">ምንም ጉዞ የለም</div>'}
+    `;
+    // draw chart only for month/all
+    if(currentPeriod==='all'||currentPeriod==='month') setTimeout(drawChart,50);
+  }
+
+  // ---- EXCEL EXPORT ----
+  function exportExcel(){
+    const data=getPeriodData();
+    if(!data.length){showToast('⚠️ ምንም ጉዞ የለም');return;}
+    const BOM='\uFEFF';
+    const header='ደንበኛ,ቦታ,ክፍያ (ብር),ጭነት,ቀን,ሰዓት,ሁኔታ\n';
+    const rows=data.map(t=>[
+      `"${t.customer}"`,`"${t.place}"`,t.price||0,
+      `"${t.cargo||''}"`,t.date||'',t.time||'',
+      (t.payment||'paid')==='paid'?'ከፍሏል':'አልከፈለም'
+    ].join(',')).join('\n');
+    const blob=new Blob([BOM+header+rows],{type:'text/csv;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=`bajaj_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click(); showToast('📥 Excel ተዘጋጅቷል!');
+  }
+
+  // ---- PDF EXPORT ----
+  function exportPDF(){
+    const data=getPeriodData();
+    if(!data.length){showToast('⚠️ ምንም ጉዞ የለም');return;}
+    const revenue=data.reduce((s,t)=>s+(t.price||0),0);
+    const periodLabel={'day':'ዛሬ','week':'ይህ ሳምንት','month':'ይህ ወር','all':'ሁሉም ጊዜ'}[currentPeriod];
+    const rows=data.map((t,i)=>`<tr>
+      <td>${i+1}</td><td>${t.customer}</td><td>${t.place}</td>
+      <td>${(t.price||0).toLocaleString()}</td><td>${t.cargo||'—'}</td>
+      <td>${t.date||'—'}</td>
+      <td style="color:${(t.payment||'paid')==='paid'?'green':'red'}">${(t.payment||'paid')==='paid'?'✅':'❌'}</td>
+    </tr>`).join('');
+    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic&display=swap');
+      body{font-family:'Noto Sans Ethiopic',sans-serif;padding:20px;font-size:12px}
+      h2{color:#d4881a}table{border-collapse:collapse;width:100%}
+      th{background:#f5a623;padding:8px;text-align:left}
+      td{border-bottom:1px solid #ddd;padding:6px}
+      .summary{background:#fffdf8;border:1px solid #e8dfc8;padding:12px;border-radius:8px;margin-bottom:16px}
+    </style></head><body>
+    <h2>🛺 ባጃጅ ትራከር — ${periodLabel} ሪፖርት</h2>
+    <div class="summary">
+      <strong>ጠቅላላ ጉዞ:</strong> ${data.length} &nbsp;|&nbsp;
+      <strong>ጠቅላላ ገቢ:</strong> ${revenue.toLocaleString()} ብር &nbsp;|&nbsp;
+      <strong>ቀን:</strong> ${new Date().toLocaleDateString('en-GB')}
+    </div>
+    <table><thead><tr><th>#</th><th>ደንበኛ</th><th>ቦታ</th><th>ብር</th><th>ጭነት</th><th>ቀን</th><th>ሁኔታ</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    </body></html>`;
+    const w=window.open('','_blank');
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(()=>w.print(),600);
+    showToast('📄 PDF ዝግጁ ነው!');
+  }
+
+  function showPage(name){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('page-'+name).classList.add('active');
+    ['add','list','report','expenses','settings'].forEach((p,i)=>{ if(p===name) document.querySelectorAll('.nav-btn')[i].classList.add('active'); });
+    if(name==='list') renderList();
+    if(name==='report'){populateMonthSelects();setPeriod(currentPeriod);}
+    if(name==='expenses'){populateExpenseMonths();renderExpenses();}
+    if(name==='settings'){renderAdminList();initNotifUI();}
+  }
+
+  // ---- MODAL ----
+  function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+  document.getElementById('history-modal').addEventListener('click',function(e){if(e.target===this)closeModal('history-modal');});
+  document.getElementById('edit-modal').addEventListener('click',function(e){if(e.target===this)closeModal('edit-modal');});
+  document.getElementById('admin-modal').addEventListener('click',function(e){if(e.target===this)closeModal('admin-modal');});
+
+  // ---- TOAST ----
+  function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+
+  let undoTimer=null;
+  function showUndoToast(msg){
+    const t=document.getElementById('toast');
+    t.innerHTML=`${msg} &nbsp;<button onclick="undoLast()" style="background:var(--orange);color:var(--black);border:none;border-radius:6px;padding:3px 10px;font-weight:900;cursor:pointer;font-family:inherit;font-size:0.82rem;">↩️ መልስ</button>`;
+    t.classList.add('show');
+    if(undoTimer) clearTimeout(undoTimer);
+    undoTimer=setTimeout(()=>t.classList.remove('show'),4000);
+  }
+
+  function undoLast(){
+    if(!deleteHistory.length){ showToast('⚠️ ምንም history የለም'); return; }
+    const last=deleteHistory.pop();
+    if(last.type==='delete'){
+      trips.splice(last.index,0,last.trip);
+      saveTrips(trips); populateMonthSelects(); renderList(); renderReport();
+      showToast('✅ ጉዞ ተመልሷል');
+    } else if(last.type==='edit'){
+      const idx=trips.findIndex(x=>x.id===last.trip.id);
+      if(idx!==-1){ trips[idx]=last.trip; saveTrips(trips); renderList(); renderReport(); showToast('✅ ጉዞ ወደ ቀድሞው ተመልሷል'); }
+    }
+    document.getElementById('toast').classList.remove('show');
+  }
+
+  function openHistory(){
+    if(!deleteHistory.length){
+      document.getElementById('history-list').innerHTML='<div class="empty-state" style="padding:20px"><div class="empty-icon">📭</div><div>ምንም history የለም</div></div>';
+    } else {
+      document.getElementById('history-list').innerHTML=[...deleteHistory].reverse().map((h,ri)=>{
+        const i=deleteHistory.length-1-ri;
+        const t=h.trip;
+        const label=h.type==='delete'?'🗑️ ተሰርዟል':'✏️ ተስተካክሏል';
+        return `<div class="rank-row" style="flex-direction:column;align-items:flex-start;gap:6px">
+          <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+            <span style="font-weight:700">${t.customer} — ${(t.price||0).toLocaleString()} ብር</span>
+            <span style="font-size:0.72rem;background:#eee;padding:2px 8px;border-radius:10px">${label}</span>
+          </div>
+          <div style="font-size:0.78rem;color:var(--gray)">📍 ${t.place} · ${t.date||'—'}</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-sm-edit" onclick="undoSpecific(${i});closeModal('history-modal')">↩️ መልስ</button>
+            <button class="btn-sm-danger" onclick="removeHistory(${i})">🗑️ ጥፋ</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    document.getElementById('history-modal').classList.add('open');
+  }
+
+  function undoSpecific(i){
+    const h=deleteHistory[i];
+    if(!h) return;
+    if(h.type==='delete'){
+      trips.splice(h.index,0,h.trip);
+      saveTrips(trips); populateMonthSelects(); renderList(); renderReport();
+      showToast('✅ ጉዞ ተመልሷል');
+    } else if(h.type==='edit'){
+      const idx=trips.findIndex(x=>x.id===h.trip.id);
+      if(idx!==-1){ trips[idx]=h.trip; saveTrips(trips); renderList(); renderReport(); showToast('✅ ጉዞ ወደ ቀድሞው ተመልሷል'); }
+    }
+    deleteHistory.splice(i,1);
+  }
+
+  function removeHistory(i){
+    deleteHistory.splice(i,1);
+    openHistory();
+    showToast('🗑️ ከ history ተሰርዟል');
+  }
+
+  // ---- PWA ----
+
+
+  // ---- INIT ----
+  window.addEventListener('DOMContentLoaded',()=>{
+    const now=new Date();
+    document.getElementById('f-date').value=now.toISOString().slice(0,10);
+    document.getElementById('f-time').value=now.toTimeString().slice(0,5);
+    document.getElementById('ex-date').value=now.toISOString().slice(0,10);
+    initNotifUI();
+
+    // auto-login if session exists
+    const saved = getSession();
+    if(saved){
+      const admins = getAdmins();
+      const found = admins.find(a => a.phone===saved.phone && a.pin===saved.pin);
+      if(found){
+        currentUser = found;
+        document.getElementById('login-screen').style.display='none';
+        document.getElementById('app-screen').style.display='block';
+        document.getElementById('header-user').textContent = found.phone;
+        trips = getTrips();
+        populateMonthSelects(); renderList(); renderReport(); renderAdminList();
+        showPage('add');
+      } else {
+        clearSession();
+      }
+    }
+  });
+</script>
+</body>
+</html>
